@@ -1,24 +1,37 @@
 # Sistema FullStack para Conversas em Tempo Real
-## FalaBLAU
+## BLAU  
 
-Um sistema de chat em tempo real construído com arquitetura de microsserviços, utilizando Flask (backend) e React (frontend), totalmente containerizado com Docker. Usa Kafka como broker de mensageria para eventos em tempo real e gerenciamento de sessões WebSocket. Mensagens antigas podem ser arquivadas em um banco NoSQL dedicado para retenção e consultas históricas.
+Um sistema de chat em tempo real construído com arquitetura de microsserviços avançada, utilizando Flask (backend), React (frontend), com API Gateway, sistema de mensageria e autenticação centralizada, totalmente containerizado com Docker.
+
+![Arquitetura do Sistema](docs/arquitetura-sistema.png)
+
+> 📖 **Documentação Detalhada**: Para uma visão aprofundada da arquitetura, fluxos de dados e padrões implementados, consulte a [Documentação de Arquitetura Detalhada](docs/arquitetura-detalhada.md).
 
 ## 🏗️ Arquitetura
 
-### Microsserviços
-- **Serviço de Autenticação (auth-service)**: Gerenciamento de usuários, login, registro e validação JWT
-- **Serviço de Chat (chat-service)**: Chat em tempo real com WebSockets, gerenciamento de salas e mensagens
-- **Serviço de Arquivo (archive-service)**: Armazenamento e consulta de mensagens antigas em NoSQL (MongoDB)
+### Camada de Autenticação
+- **Keycloak**: Servidor de autenticação e autorização centralizado (SSO)
+- **JWT Tokens**: Validação distribuída entre microsserviços
+
+### API Gateway e Load Balancing
+- **Kong API Gateway**: Gateway centralizado para roteamento, rate limiting e políticas
+- **NGINX Load Balancer**: Distribuição de carga e proxy reverso
+
+### Microsserviços Backend
+- **Serviço de Autenticação (Python/Flask)**: Integração com Keycloak, gerenciamento de usuários
+- **Serviço de Chat (Python/Flask)**: Chat em tempo real com WebSockets, gerenciamento de salas e mensagens
+
+### Sistema de Mensageria
+- **Kafka/RabbitMQ**: Message broker para comunicação assíncrona entre microsserviços
+- **Event-driven Architecture**: Processamento de eventos em tempo real
 
 ### Frontend
-- **React App**: Interface client-side com Material-UI para chat em tempo real
+- **React App (NodeJS)**: Interface client-side com Material-UI para chat em tempo real
 
-### Infraestrutura
-- **PostgreSQL**: Banco de dados principal
-- **Kafka**: Broker de mensageria e gerenciamento de sessões WebSocket
-- **MongoDB**: Banco NoSQL para arquivamento de mensagens antigas
-- **Nginx**: Load balancer e proxy reverso
-- **Docker**: Containerização completa
+### Camada de Dados
+- **PostgreSQL**: Banco de dados principal para usuários e configurações
+- **NoSQL (MongoDB/CouchDB)**: Armazenamento otimizado para mensagens de chat
+- **Redis**: Cache, sessões WebSocket e broker de mensagens em tempo real
 
 ## 📁 Estrutura do Projeto
 
@@ -27,30 +40,46 @@ backend/
 ├── services/
 │   ├── auth-service/          # Microsserviço de Autenticação
 │   │   ├── app.py            # Aplicação Flask principal
+│   │   ├── keycloak_integration.py # Integração com Keycloak
 │   │   ├── requirements.txt  # Dependências Python
 │   │   ├── Dockerfile       # Container do serviço
 │   │   └── .env.example     # Variáveis de ambiente
-│   ├── chat-service/         # Microsserviço de Chat
-│   │   ├── app.py           # Aplicação Flask com Socket.IO
-│   │   ├── requirements.txt # Dependências Python
-│   │   ├── Dockerfile      # Container do serviço
-│   │   └── .env.example    # Variáveis de ambiente
-│   └── archive-service/      # Microsserviço de Arquivo (NoSQL)
-│       ├── app.py           # API para arquivar e consultar mensagens
-│       ├── requirements.txt # Dependências Python (pymongo etc.)
-│       ├── Dockerfile       # Container do serviço
-│       └── .env.example     # Variáveis de ambiente (MONGO_URI, TTL)
-├── frontend/                # Aplicação React
+│   └── chat-service/         # Microsserviço de Chat
+│       ├── app.py           # Aplicação Flask com Socket.IO
+│       ├── message_broker.py # Integração com Kafka/RabbitMQ
+│       ├── requirements.txt # Dependências Python
+│       ├── Dockerfile      # Container do serviço
+│       └── .env.example    # Variáveis de ambiente
+├── frontend/                # Aplicação React (NodeJS)
 │   ├── src/
 │   │   ├── components/      # Componentes React
-│   │   ├── services/        # Serviços API
+│   │   ├── services/       # Serviços API
 │   │   └── App.js          # Aplicação principal
 │   ├── package.json
 │   ├── Dockerfile
 │   └── nginx.conf          # Configuração Nginx
-├── docker-compose.yml      # Orquestração completa (inclui MongoDB)
+├── infrastructure/          # Configurações de Infraestrutura
+│   ├── kong/               # API Gateway Kong
+│   │   ├── kong.yml        # Configuração do Kong
+│   │   └── plugins/        # Plugins personalizados
+│   ├── keycloak/           # Servidor de Autenticação
+│   │   ├── keycloak.yml    # Configuração do Keycloak
+│   │   └── themes/         # Temas personalizados
+│   ├── kafka/              # Sistema de Mensageria
+│   │   └── kafka.yml       # Configuração do Kafka/RabbitMQ
+│   └── nginx/              # Load Balancer
+│       └── nginx.conf      # Configuração NGINX
+├── databases/              # Configurações de Banco de Dados
+│   ├── postgresql/         # SQL Database (Usuários)
+│   ├── mongodb/           # NoSQL Database (Chat)
+│   └── redis/             # Cache e Sessões
+├── docs/                  # Documentação
+│   ├── arquitetura-sistema.png # Diagrama de arquitetura
+│   ├── api-documentation.md    # Documentação da API
+│   └── deployment-guide.md     # Guia de deployment
+├── docker-compose.yml      # Orquestração completa
 ├── docker-compose.dev.yml  # Ambiente de desenvolvimento
-├── nginx.conf             # Load balancer
+├── docker-compose.prod.yml # Ambiente de produção
 └── README.md
 ```
 
@@ -76,9 +105,6 @@ backend/
    
    # Serviço de Chat  
    cp services/chat-service/.env.example services/chat-service/.env
-
-   # Serviço de Arquivo (NoSQL)
-   cp services/archive-service/.env.example services/archive-service/.env
    
    # Frontend
    cp frontend/.env.example frontend/.env
@@ -93,7 +119,6 @@ backend/
    - Frontend: http://localhost:3000
    - Auth Service: http://localhost:5000
    - Chat Service: http://localhost:5001
-   - Archive Service: http://localhost:5002
    - Aplicação completa (via Nginx): http://localhost
 
 ### Ambiente de Desenvolvimento (Apenas Backend)
@@ -115,14 +140,18 @@ npm start
 
 | Serviço | Porta | Descrição |
 |---------|-------|-----------|
-| Frontend (React) | 3000 | Interface do usuário |
-| Auth Service | 5000 | API de autenticação |
-| Chat Service | 5001 | API de chat e WebSocket |
-| Archive Service (NoSQL API) | 5002 | API para arquivar/consultar mensagens antigas |
-| PostgreSQL | 5432 | Banco de dados |
-| MongoDB | 27017 | Banco NoSQL para arquivamento |
-| Kafka | 9092 | Broker de mensageria |
-| Nginx | 80 | Load balancer |
+| **Frontend (React/NodeJS)** | 3000 | Interface do usuário |
+| **NGINX Load Balancer** | 80/443 | Load balancer e proxy reverso |
+| **Kong API Gateway** | 8000/8443 | API Gateway e rate limiting |
+| **Keycloak** | 8080 | Servidor de autenticação SSO |
+| **Auth Service (Flask)** | 5000 | API de autenticação |
+| **Chat Service (Flask)** | 5001 | API de chat e WebSocket |
+| **Kafka/RabbitMQ** | 9092/5672 | Sistema de mensageria |
+| **PostgreSQL** | 5432 | Banco SQL (usuários) |
+| **MongoDB/NoSQL** | 27017 | Banco NoSQL (chat) |
+| **Redis** | 6379 | Cache e sessões |
+| **Kong Admin API** | 8001 | Interface administrativa Kong |
+| **Keycloak Admin** | 8080/admin | Interface administrativa Keycloak |
 
 ## 🔧 Funcionalidades
 
@@ -136,13 +165,8 @@ npm start
 - ✅ Salas de chat públicas
 - ✅ Mensagens em tempo real (WebSocket)
 - ✅ Indicadores de digitação
-- ✅ Histórico de mensagens (curto prazo)
+- ✅ Histórico de mensagens
 - ✅ Notificações de entrada/saída de usuários
-
-### Arquivamento (NoSQL)
-- ✅ Armazenamento de mensagens antigas em MongoDB
-- ✅ TTL ou cron para mover mensagens antigas automaticamente
-- ✅ Consulta histórica eficiente por sala/usuário/período
 
 ### Interface
 - ✅ Design responsivo com Material-UI
@@ -153,77 +177,144 @@ npm start
 
 ## 🛠️ Tecnologias Utilizadas
 
-### Backend
+### Backend (Python/Flask)
 - **Flask**: Framework web minimalista
 - **Flask-SocketIO**: WebSocket para comunicação em tempo real
 - **Flask-SQLAlchemy**: ORM para banco de dados
 - **Flask-JWT-Extended**: Autenticação JWT
-- **PostgreSQL**: Banco de dados relacional
-- **MongoDB**: NoSQL para arquivamento de mensagens
-- **pymongo**: Cliente MongoDB para Python
-- **Kafka**: Broker de mensageria e gerenciamento de sessões WebSocket
 - **Gunicorn**: Servidor WSGI para produção
+- **Celery**: Processamento assíncrono de tarefas
 
-### Frontend
+### Frontend (NodeJS/React)
 - **React**: Biblioteca para interfaces
 - **Material-UI**: Componentes de interface
 - **Socket.IO Client**: Cliente WebSocket
 - **Axios**: Cliente HTTP
 - **React Router**: Roteamento
+- **Redux/Context API**: Gerenciamento de estado
 
-### DevOps
+### Autenticação e Autorização
+- **Keycloak**: Servidor de identidade e acesso
+- **OAuth 2.0/OpenID Connect**: Protocolos de autenticação
+- **JWT**: Tokens de autenticação distribuída
+
+### API Gateway e Load Balancing
+- **Kong**: API Gateway com plugins
+- **NGINX**: Load balancer e proxy reverso
+- **Rate Limiting**: Controle de taxa de requisições
+- **Circuit Breaker**: Padrão de resilência
+
+### Sistema de Mensageria
+- **Apache Kafka**: Streaming de eventos em tempo real
+- **RabbitMQ**: Message broker AMQP
+- **Event Sourcing**: Arquitetura orientada a eventos
+
+### Banco de Dados
+- **PostgreSQL**: Banco relacional (usuários, configurações)
+- **MongoDB**: Banco NoSQL (mensagens de chat)
+- **Redis**: Cache, sessões e pub/sub
+
+### DevOps e Monitoramento
 - **Docker**: Containerização
 - **Docker Compose**: Orquestração de containers
-- **Nginx**: Proxy reverso e load balancer
-- **Backup/Retention**: Estratégias para dados NoSQL (dump/TTL/archival)
+- **Kubernetes**: Orquestração em produção (opcional)
+- **Prometheus**: Métricas e monitoramento
+- **Grafana**: Dashboards e visualização
+- **ELK Stack**: Logs centralizados (Elasticsearch, Logstash, Kibana)
 
 ## 🔐 Segurança
 
-- Autenticação JWT com expiração
-- Validação de entrada de dados
-- CORS configurado adequadamente
-- Variáveis de ambiente para dados sensíveis
-- Validação de tokens em todas as rotas protegidas
-- Acesso restrito ao banco NoSQL via credenciais e rede interna
+### Autenticação e Autorização
+- **SSO (Single Sign-On)** via Keycloak
+- **OAuth 2.0 / OpenID Connect** para autenticação distribuída
+- **JWT Tokens** com expiração e refresh tokens
+- **Role-based Access Control (RBAC)** para permissões granulares
+- **Multi-factor Authentication (MFA)** opcional
+
+### API Security
+- **API Gateway (Kong)** com rate limiting e throttling
+- **CORS** configurado adequadamente
+- **HTTPS/TLS** obrigatório em produção
+- **API Keys** e authentication headers
+- **Request/Response validation** em todos os endpoints
+
+### Infraestrutura
+- **Variáveis de ambiente** para dados sensíveis
+- **Secrets management** com Docker secrets ou Vault
+- **Network segmentation** entre containers
+- **Firewall rules** e security groups
+- **Container security scanning** com Trivy ou similar
+
+### Monitoramento e Auditoria
+- **Logging centralizado** de eventos de segurança
+- **Alertas** para tentativas de acesso não autorizado
+- **Audit trails** para rastreabilidade
+- **Health checks** e monitoring contínuo
 
 ## 📡 API Endpoints
 
-### Serviço de Autenticação (porta 5000)
+### Kong API Gateway (porta 8000)
+Todos os requests passam pelo API Gateway com autenticação e rate limiting:
 ```
-POST /register     # Registro de usuário
-POST /login        # Login
-POST /verify       # Validação de token
-GET  /users/me     # Dados do usuário atual
-GET  /health       # Health check
-```
-
-### Serviço de Chat (porta 5001)
-```
-GET  /rooms                    # Listar salas
-POST /rooms                    # Criar sala
-GET  /rooms/{id}/messages      # Histórico de mensagens (curto prazo)
-GET  /health                   # Health check
+/api/v1/auth/*     # Rotas do serviço de autenticação
+/api/v1/chat/*     # Rotas do serviço de chat
+/api/v1/users/*    # Rotas de usuários
 ```
 
-### Serviço de Arquivo (porta 5002)
+### Keycloak Authentication (porta 8080)
 ```
-POST /archive/messages             # Arquivar lote de mensagens
-GET  /archive/rooms/{id}?start=&end=&page=  # Consultar mensagens arquivadas por sala/período
-GET  /archive/users/{userId}?start=&end=     # Consultar por usuário
-DELETE /archive/cleanup          # Trigger manual de limpeza/TTL (protegido)
-GET /health                      # Health check
-```
-
-### WebSocket Events
-```
-connect          # Conexão
-join_room        # Entrar em sala
-leave_room       # Sair da sala
-send_message     # Enviar mensagem
-typing           # Indicador de digitação
+/auth/realms/{realm}/protocol/openid-connect/auth    # Authorization endpoint
+/auth/realms/{realm}/protocol/openid-connect/token   # Token endpoint  
+/auth/realms/{realm}/protocol/openid-connect/userinfo # User info
+/auth/admin/realms/{realm}/users                     # User management
 ```
 
-Observação: o chat-service pode publicar eventos em Kafka para que o archive-service consuma e armazene mensagens antigas de forma assíncrona.
+### Serviço de Autenticação - via Kong (porta 5000)
+```
+POST /api/v1/auth/register     # Registro de usuário
+POST /api/v1/auth/login        # Login via Keycloak
+POST /api/v1/auth/logout       # Logout
+POST /api/v1/auth/refresh      # Refresh token
+GET  /api/v1/auth/profile      # Perfil do usuário
+GET  /api/v1/auth/health       # Health check
+```
+
+### Serviço de Chat - via Kong (porta 5001)
+```
+GET  /api/v1/chat/rooms                    # Listar salas
+POST /api/v1/chat/rooms                    # Criar sala
+GET  /api/v1/chat/rooms/{id}               # Detalhes da sala
+GET  /api/v1/chat/rooms/{id}/messages      # Histórico de mensagens
+POST /api/v1/chat/rooms/{id}/messages      # Enviar mensagem (REST)
+DELETE /api/v1/chat/rooms/{id}             # Deletar sala
+PUT  /api/v1/chat/rooms/{id}               # Atualizar sala
+GET  /api/v1/chat/health                   # Health check
+```
+
+### WebSocket Events (via Chat Service)
+```
+connect              # Conexão autenticada
+disconnect           # Desconexão
+join_room            # Entrar em sala
+leave_room           # Sair da sala
+send_message         # Enviar mensagem em tempo real
+typing               # Indicador de digitação
+user_joined          # Usuário entrou na sala
+user_left            # Usuário saiu da sala
+message_received     # Nova mensagem recebida
+room_updated         # Sala foi atualizada
+```
+
+### Message Broker Events (Kafka/RabbitMQ)
+```
+user.registered      # Usuário se registrou
+user.login           # Usuário fez login
+room.created         # Sala foi criada
+room.deleted         # Sala foi deletada
+message.sent         # Mensagem foi enviada
+user.joined.room     # Usuário entrou em sala
+user.left.room       # Usuário saiu da sala
+```
 
 ## 🧪 Desenvolvimento
 
@@ -232,7 +323,6 @@ Observação: o chat-service pode publicar eventos em Kafka para que o archive-s
 # Backend
 docker exec -it auth-service python -m pytest
 docker exec -it chat-service python -m pytest
-docker exec -it archive-service python -m pytest
 
 # Frontend
 cd frontend
@@ -247,7 +337,6 @@ docker-compose logs -f
 # Ver logs de um serviço específico
 docker-compose logs -f auth-service
 docker-compose logs -f chat-service
-docker-compose logs -f archive-service
 ```
 
 ### Debugging
@@ -255,7 +344,6 @@ docker-compose logs -f archive-service
 # Acessar container
 docker exec -it auth-service bash
 docker exec -it chat-service bash
-docker exec -it archive-service bash
 
 # Verificar status dos serviços
 docker-compose ps
@@ -263,33 +351,90 @@ docker-compose ps
 
 ## 🚀 Deploy para Produção
 
+### Pré-requisitos de Produção
 1. **Configure variáveis de ambiente de produção**
-2. **Use HTTPS com certificados SSL**
-3. **Configure backup do PostgreSQL e MongoDB**
-4. **Monitore logs e performance**
-5. **Configure auto-scaling se necessário**
-6. **Defina política de retenção/TTL para o MongoDB ou jobs de arquivamento**
+2. **Setup Kubernetes cluster ou Docker Swarm**
+3. **Configure HTTPS com certificados SSL/TLS**
+4. **Setup backup automatizado dos bancos de dados**
+5. **Configure monitoramento e alertas**
+6. **Setup CI/CD pipeline**
+
+### Ambientes de Deploy
+```bash
+# Desenvolvimento
+docker-compose -f docker-compose.dev.yml up -d
+
+# Produção
+docker-compose -f docker-compose.prod.yml up -d
+
+# Kubernetes
+kubectl apply -f k8s/
+```
 
 ### Variáveis de Ambiente Importantes
 ```bash
+# Keycloak
+KEYCLOAK_ADMIN=admin
+KEYCLOAK_ADMIN_PASSWORD=secure-admin-password
+KEYCLOAK_DATABASE_URL=postgresql://keycloak_user:pass@keycloak-db:5432/keycloak
+
+# Kong API Gateway
+KONG_DATABASE=postgres
+KONG_PG_HOST=kong-database
+KONG_PG_USER=kong
+KONG_PG_PASSWORD=kong-password
+KONG_PROXY_ACCESS_LOG=/dev/stdout
+KONG_ADMIN_ACCESS_LOG=/dev/stdout
+
 # Segurança
 JWT_SECRET_KEY=your-production-jwt-secret
 SECRET_KEY=your-production-secret-key
+KEYCLOAK_CLIENT_SECRET=your-keycloak-client-secret
 
-# Banco de dados
-DATABASE_URL=postgresql://user:pass@host:port/db
+# Bancos de dados
+DATABASE_URL=postgresql://user:pass@postgres-host:5432/chatdb
+MONGODB_URI=mongodb://user:pass@mongo-host:27017/chatdb
+REDIS_URL=redis://redis-host:6379/0
 
-# MongoDB (NoSQL)
-MONGO_URI=mongodb://user:pass@mongo:27017/archive_db
-ARCHIVE_TTL_DAYS=365
-
-# Kafka
-KAFKA_BOOTSTRAP_SERVERS=kafka1:9092,kafka2:9092
+# Message Broker
+KAFKA_BROKERS=kafka1:9092,kafka2:9092,kafka3:9092
+RABBITMQ_URL=amqp://user:pass@rabbitmq-host:5672/
 
 # URLs dos serviços
-AUTH_SERVICE_URL=https://auth.yourdomain.com
-CHAT_SERVICE_URL=https://chat.yourdomain.com
-ARCHIVE_SERVICE_URL=https://archive.yourdomain.com
+KONG_GATEWAY_URL=https://api.yourdomain.com
+KEYCLOAK_URL=https://auth.yourdomain.com
+FRONTEND_URL=https://chat.yourdomain.com
+
+# Monitoramento
+PROMETHEUS_URL=https://metrics.yourdomain.com
+GRAFANA_URL=https://dashboard.yourdomain.com
+ELASTICSEARCH_URL=https://logs.yourdomain.com
+```
+
+### Setup de Monitoramento
+```yaml
+# docker-compose.monitoring.yml
+version: '3.8'
+services:
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3001:3000"
+    
+  elasticsearch:
+    image: elasticsearch:7.17.0
+    ports:
+      - "9200:9200"
+    
+  kibana:
+    image: kibana:7.17.0
+    ports:
+      - "5601:5601"
 ```
 
 ## 🐛 Troubleshooting
@@ -304,15 +449,10 @@ ARCHIVE_SERVICE_URL=https://archive.yourdomain.com
 
 2. **WebSocket não conecta:**
    - Verifique CORS no chat-service
-   - Confirme se o Kafka (broker) está funcionando e os tópicos necessários existem
+   - Confirme se o Redis está funcionando
    - Valide o token JWT
 
-3. **Mensagens não são arquivadas:**
-   - Verifique se o archive-service está consumindo o tópico correto do Kafka
-   - Confirme string de conexão MONGO_URI e credenciais
-   - Verifique índices TTL no MongoDB (se configurado)
-
-4. **Frontend não carrega:**
+3. **Frontend não carrega:**
    - Verifique se as variáveis de ambiente estão corretas
    - Confirme se os serviços backend estão rodando
 
@@ -321,20 +461,58 @@ ARCHIVE_SERVICE_URL=https://archive.yourdomain.com
 # Verificar serviços
 curl http://localhost:5000/health
 curl http://localhost:5001/health
-curl http://localhost:5002/health
 ```
 
-## 📈 Próximas Funcionalidades
+## 📈 Roadmap e Próximas Funcionalidades
 
-- [ ] Salas privadas
-- [ ] Mensagens diretas entre usuários  
-- [ ] Upload de arquivos e imagens
-- [ ] Notificações push
-- [x] Arquivamento automático de mensagens em NoSQL
-- [ ] Histórico de mensagens paginado (com cursor no NoSQL)
-- [ ] Moderação de salas
-- [ ] Temas customizáveis
-- [ ] API REST completa para mobile
+### Fase 1 - Funcionalidades Básicas ✅
+- [x] Autenticação via Keycloak
+- [x] API Gateway com Kong
+- [x] Chat em tempo real
+- [x] Microsserviços containerizados
+
+### Fase 2 - Funcionalidades Avançadas 🚧
+- [ ] **Salas privadas e grupos**
+- [ ] **Mensagens diretas entre usuários**
+- [ ] **Upload de arquivos e imagens**
+- [ ] **Notificações push em tempo real**
+- [ ] **Histórico de mensagens paginado**
+- [ ] **Busca avançada de mensagens**
+
+### Fase 3 - Moderação e Administração 📋
+- [ ] **Sistema de moderação de salas**
+- [ ] **Painel administrativo**
+- [ ] **Relatórios de uso e analytics**
+- [ ] **Sistema de permissões granulares**
+- [ ] **Auditoria completa de ações**
+
+### Fase 4 - Experiência do Usuário 🎨
+- [ ] **Temas customizáveis (dark/light)**
+- [ ] **Emojis e reações nas mensagens**
+- [ ] **Status de usuário (online/ocupado/ausente)**
+- [ ] **Configurações de notificação**
+- [ ] **Interface mobile responsiva**
+
+### Fase 5 - Integrações e API 🔗
+- [ ] **API REST completa para mobile**
+- [ ] **SDK para desenvolvedores**
+- [ ] **Webhooks para integrações**
+- [ ] **Integração com Slack/Discord**
+- [ ] **Bot framework para automação**
+
+### Fase 6 - Performance e Escalabilidade ⚡
+- [ ] **Auto-scaling horizontal**
+- [ ] **CDN para arquivos estáticos**
+- [ ] **Database sharding**
+- [ ] **Caching avançado com Redis Cluster**
+- [ ] **WebRTC para chamadas de vídeo/áudio**
+
+### Fase 7 - Segurança Avançada 🔒
+- [ ] **End-to-end encryption**
+- [ ] **Audit logs compliance**
+- [ ] **GDPR compliance tools**
+- [ ] **Advanced threat protection**
+- [ ] **Backup e disaster recovery**
 
 ## 👥 Equipe 5 
 - Jefferson Sant'ana Galvão
@@ -346,3 +524,4 @@ curl http://localhost:5002/health
 ## 📝 Licença
 
 Este projeto é desenvolvido para fins educacionais como parte da especialização em desenvolvimento fullstack.
+
