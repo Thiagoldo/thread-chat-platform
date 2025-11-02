@@ -2,3 +2,4 @@ Flask
 Flask-PyMongo
 gunicorn
 python-dotenv
+flask-restx

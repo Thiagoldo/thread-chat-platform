@@ -15,7 +15,9 @@ def create_app():
         from . import routes
         
         # Register Blueprints
-        app.register_blueprint(routes.users_bp)
+        from flask_restx import Api
+        api = Api(app, title='Users API', version='1.0', description='API for user management')
+        api.add_namespace(routes.users_bp)
 
         # Create database tables for our models
         db.create_all()

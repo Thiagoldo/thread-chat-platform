@@ -15,6 +15,8 @@ def create_app():
         from . import routes
         
         # Register Blueprints
-        app.register_blueprint(routes.chat_bp)
+        from flask_restx import Api
+        api = Api(app, title='Chat API', version='1.0', description='API for chat management')
+        api.add_namespace(routes.chat_bp)
 
         return app

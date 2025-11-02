@@ -7,6 +7,12 @@ import os
 from .config import Config
 from .queue_consumer import start_consumer
 import threading
+import logging
+import sys
+
+# Configure logging
+logging.basicConfig(stream=sys.stdout, level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 # Instantiate without config-dependent parameters
 socketio = SocketIO(cors_allowed_origins="*", async_mode='eventlet')
@@ -15,6 +21,7 @@ def create_app():
     """Construct the core application."""
     app = Flask(__name__)
     app.config.from_object(Config)
+    app.logger = logger
 
     # Initialize with app config now that it's loaded
     socketio.init_app(app, message_queue=app.config['RABBITMQ_URL'])
