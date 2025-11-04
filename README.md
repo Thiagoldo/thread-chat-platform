@@ -6,6 +6,27 @@ Um sistema de chat em tempo real construído com arquitetura de microsserviços,
 
 ![Arquitetura do Sistema](public/arquitetura-sistema.jpeg)
 
+## 📜 Sumário
+
+- [Funcionalidades](#-funcionalidades)
+- [Arquitetura](#️-arquitetura)
+- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
+- [Estrutura do Projeto](#-estrutura-do-projeto)
+- [Como Executar](#-como-executar)
+- [Documentação](#-documentação)
+- [Serviços e Portas](#-serviços-e-portas)
+- [API Endpoints](#-api-endpoints)
+- [Áreas Administrativas](#-áreas-administrativas)
+- [Variáveis de Ambiente](#-variáveis-de-ambiente)
+
+## ✨ Funcionalidades
+
+- [ ] Autenticação e autorização de usuários com Keycloak.
+- [ ] Gerenciamento de usuários, perfis e contatos.
+- [ ] Criação e gerenciamento de salas de chat.
+- [ ] Envio e recebimento de mensagens em tempo real.
+- [ ] Notificações de mensagens e status de usuário.
+
 ## 🏗️ Arquitetura
 
 O projeto é composto pelos seguintes serviços:
@@ -13,12 +34,24 @@ O projeto é composto pelos seguintes serviços:
 - **nginx**: Atua como um proxy reverso para os outros serviços.
 - **kong**: API Gateway para gerenciar as rotas e o acesso aos microsserviços.
 - **keycloak**: Lida com a autenticação e autorização de usuários.
-- **user-service**: Microsserviço para gerenciar usuários, perfis e contatos. Utiliza **PostgreSQL** como banco de dados.
-- **chat-service**: Microsserviço para gerenciar as salas de chat e mensagens. Utiliza **MongoDB** como banco de dados.
-- **websocket-service**: Lida com a comunicação em tempo real usando WebSockets e se comunica com outros serviços através do **RabbitMQ**.
+- **user-service**: Microsserviço para gerenciar usuários, perfis e contatos.
+- **chat-service**: Microsserviço para gerenciar as salas de chat e mensagens.
+- **websocket-service**: Lida com a comunicação em tempo real usando WebSockets.
 - **postgresql**: Banco de dados relacional para o `user-service`.
 - **mongodb**: Banco de dados NoSQL para o `chat-service`.
 - **rabbitmq**: Message broker para a comunicação assíncrona entre os serviços.
+
+## 🛠️ Tecnologias Utilizadas
+
+- **Backend**: Python, Flask, Flask-RESTX, Flask-SocketIO
+- **Banco de Dados**: PostgreSQL, MongoDB
+- **Mensageria**: RabbitMQ
+- **Autenticação**: Keycloak
+- **API Gateway**: Kong
+- **Containerização**: Docker, Docker Compose
+- **Comunicação em Tempo Real**: WebSockets
+- **Servidor WSGI**: Gunicorn, Eventlet
+- **Outros**: Pika (para RabbitMQ), Kombu, Psycopg2, PyMongo
 
 ## 📁 Estrutura do Projeto
 
@@ -72,7 +105,6 @@ Para mais detalhes sobre a arquitetura e o fluxo de dados do sistema, consulte o
 - **[Fluxo de Dados](docs/fluxo-de-dados.md)**: Descreve como os dados fluem entre os diferentes microsserviços.
 - **[Diagramas de Arquitetura](docs/diagrams.md)**: Contém diagramas que ilustram a arquitetura do sistema.
 
-
 ## 📊 Serviços e Portas
 
 | Serviço             | Porta      | Descrição                                      |
@@ -111,3 +143,7 @@ Para acessar as áreas administrativas dos serviços, utilize os seguintes ender
   - **URL**: `http://localhost/rabbitmq/`
   - **Usuário**: `guest`
   - **Senha**: `guest`
+
+## 📝 Variáveis de Ambiente
+
+O projeto utiliza variáveis de ambiente para configurar os serviços. Cada microsserviço possui um arquivo `.env` que precisa ser configurado corretamente. Consulte os arquivos `config.py` de cada serviço para mais detalhes sobre as variáveis necessárias.
