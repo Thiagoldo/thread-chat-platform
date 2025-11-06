@@ -1,46 +1,54 @@
 services:
   nginx:
-    image: nginx:1.29.3-alpine
+    image: fala-blau-nginx:latest
+    build:
+      context: ../nginx
+      dockerfile: ./docker/Dockerfile
     ports:
       - "80:80"
-    volumes:
-      - ../nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - kong
+      - keycloak
+      - rabbitmq
     networks:
-      - app-network
+      - frontend-network
     restart: always
 
   kong:
-    image: kong:3.9.1
+    image: fala-blau-kong:latest
+    build:
+      context: ../kong
+      dockerfile: ./docker/Dockerfile
     ports:
       - "8000:8000"
       - "8443:8443"
-    environment:
-      KONG_DATABASE: 'off'
-      KONG_DECLARATIVE_CONFIG: /etc/kong/kong.yaml
-    volumes:
-      - ../kong/kong.yaml:/etc/kong/kong.yaml
     depends_on:
       - user-service
       - chat-service
       - websocket-service
     networks:
-      - app-network
+      - frontend-network
+      - backend-network
     restart: always
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.4.2
+    ports:
+      - "8080:8080"
+    depends_on:
+      - user-service
     env_file:
       - ../.env
-    command:
-      - start
-      - --proxy-headers
-      - forwarded
+    command: ["start", "--proxy-headers", "forwarded"]
     networks:
-      - app-network
+      - frontend-network
+      - backend-network
 
   user-service:
+    image: fala-blau-users-api:latest
     build:
       context: ../microservices/users-service
+      dockerfile: ./docker/Dockerfile
     ports:
       - "3001:3001"
     depends_on:
@@ -49,11 +57,14 @@ services:
     env_file:
       - ../.env
     networks:
-      - app-network
+      - backend-network
+      - data-network
 
   chat-service:
+    image: fala-blau-chats-api:latest
     build:
       context: ../microservices/chat-service
+      dockerfile: ./docker/Dockerfile
     ports:
       - "3002:3002"
     depends_on:
@@ -61,20 +72,8 @@ services:
     env_file:
       - ../.env
     networks:
-      - app-network
-
-  websocket-service:
-    build:
-      context: ../microservices/websocket-service
-    ports:
-      - "3003:3003"
-    depends_on:
-      rabbitmq:
-        condition: service_healthy
-    env_file:
-      - ../.env
-    networks:
-      - app-network
+      - backend-network
+      - data-network
 
   postgresql:
     image: postgres:13.22-alpine
@@ -88,16 +87,31 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - app-network
+      - data-network
     restart: always
 
+  websocket-service:
+    image: fala-blau-socketio-api:latest
+    build:
+      context: ../microservices/websocket-service
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "3003:3003"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - ../.env
+    networks:
+      - backend-network
+      - data-network
 
   mongodb:
     image: mongo:8.2.1-noble
     volumes:
       - mongo-data:/data/db
     networks:
-      - app-network
+      - data-network
     restart: always
 
   rabbitmq:
@@ -110,11 +124,14 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - app-network
+      - frontend-network
+      - data-network
     restart: always
 
 networks:
-  app-network:
+  frontend-network:
+  backend-network:
+  data-network:
 
 volumes:
   postgres-data:
