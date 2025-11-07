@@ -6,6 +6,11 @@ Um sistema de chat em tempo real construído com arquitetura de microsserviços,
 
 ![Arquitetura do Sistema](public/arquitetura-sistema.jpeg)
 
+## 📚 Sobre o Projeto
+
+Este projeto, denominado FalaBLAU, foi desenvolvido como trabalho de conclusão de curso (TCC) de pós-graduação. Ele visa demonstrar a implementação de um sistema de chat em tempo real utilizando uma arquitetura de microsserviços moderna e robusta.
+
+
 ## 📜 Sumário
 
 - [Funcionalidades](#-funcionalidades)
@@ -17,7 +22,8 @@ Um sistema de chat em tempo real construído com arquitetura de microsserviços,
 - [Serviços e Portas](#-serviços-e-portas)
 - [API Endpoints](#-api-endpoints)
 - [Áreas Administrativas](#-áreas-administrativas)
-- [Variáveis de Ambiente](#-variáveis-de-ambiente)
+- [Histórico de Alterações](#-histórico-de-alterações)
+- [Licença](#-licença)
 
 ## ✨ Funcionalidades
 
@@ -113,16 +119,22 @@ O projeto é composto pelos seguintes serviços:
 - Docker
 - Docker Compose
 
-### Configuração
+### Configuração e Execução
 
 1. **Clone o repositório:**
 
    ```bash
    git clone <repository-url>
-   cd pos-unifametro-backend
+   cd <nome-da-pasta-do-projeto>
    ```
 
-2. **Inicie os serviços (incluindo o frontend):**
+2. **Configure as Variáveis de Ambiente:**
+   O projeto utiliza um arquivo `.env` para configurar as variáveis de ambiente. Crie uma cópia do arquivo de exemplo e altere os valores conforme necessário.
+   ```bash
+   cp .env.example .env
+   ```
+
+3. **Inicie os serviços:**
 
    ```bash
    docker-compose -f docker/docker-compose.yaml up -d --build
@@ -136,6 +148,8 @@ Para mais detalhes sobre a arquitetura e o fluxo de dados do sistema, consulte o
 
 - **[Fluxo de Dados](docs/fluxo-de-dados.md)**: Descreve como os dados fluem entre os diferentes microsserviços.
 - **[Diagramas de Arquitetura](docs/diagrams.md)**: Contém diagramas que ilustram a arquitetura do sistema.
+- **[Histórico de Alterações](CHANGELOG.md)**: Detalha todas as mudanças notáveis do projeto.
+- **[Licença](LICENSE)**: Informações sobre a licença de uso do software.
 
 ## 📊 Serviços e Portas
 
@@ -177,16 +191,10 @@ Para acessar as áreas administrativas dos serviços, utilize os seguintes ender
   - **Usuário**: `guest`
   - **Senha**: `guest`
 
-## 📝 Variáveis de Ambiente
+## 📜 Histórico de Alterações
 
-O projeto utiliza um arquivo `.env` para configurar as variáveis de ambiente. Para configurar o ambiente local, siga os seguintes passos:
+Consulte o CHANGELOG.md para ver as mudanças notáveis em cada versão do projeto.
 
-1. **Crie uma cópia do arquivo de exemplo:**
+## ⚖️️ Licença
 
-   ```bash
-   cp .env.example .env
-   ```
-
-2. **Altere as variáveis no arquivo `.env` conforme necessário.**
-
-O arquivo `.env` é ignorado pelo Git, então suas chaves e senhas não serão enviadas para o repositório.
+Este projeto está licenciado sob a Licença MIT.
