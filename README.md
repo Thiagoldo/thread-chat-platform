@@ -27,12 +27,23 @@ Este projeto, denominado FalaBLAU, foi desenvolvido como trabalho de conclusão 
 - [Licença](#-licença)
 
 ## ✨ Funcionalidades
+O projeto está em desenvolvimento e as seguintes funcionalidades estão planejadas:
 
 - [ ] Autenticação e autorização de usuários com Keycloak.
 - [ ] Gerenciamento de usuários, perfis e contatos.
 - [ ] Criação e gerenciamento de salas de chat.
 - [ ] Envio e recebimento de mensagens em tempo real.
 - [ ] Notificações de mensagens e status de usuário.
+
+## 🎯 Melhorias e Próximos Passos
+
+- **Implementar Logging Estruturado**:
+  - [ ] Adicionar logging estruturado em todos os microsserviços (`user-service`, `chat-service`, `websocket-service`) para gerar logs em arquivos.
+- **Configurar a Camada de Observabilidade**:
+  - [ ] Configurar o Promtail para coletar logs de todos os microsserviços e do Nginx.
+  - [ ] Criar dashboards no Grafana para visualizar e consultar os logs agregados pelo Loki.
+  - [ ] Integrar o Prometheus para coletar métricas de aplicação (ex: latência de requisições, taxas de erro) e de sistema (ex: uso de CPU/memória dos contêineres).
+  - [ ] Desenvolver dashboards no Grafana para monitorar as métricas do Prometheus.
 
 ## 🏗️ Arquitetura
 
