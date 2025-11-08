@@ -26,6 +26,7 @@ services:
       - "3000:3000"
     volumes:
       - grafana-storage:/var/lib/grafana
+      - ../observability/grafana/provisioning:/etc/grafana/provisioning
     env_file:
       - ../.env
     networks:
