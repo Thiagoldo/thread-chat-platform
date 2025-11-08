@@ -6,14 +6,30 @@ const Chat = () => {
       <div className="flex flex-row h-full w-full overflow-x-hidden">
         <div className="flex flex-col py-8 pl-6 pr-2 w-64 bg-white flex-shrink-0">
           <div className="flex flex-row items-center justify-center h-16 w-full">
-            <img src="/fala-blau.jpeg" alt="Fala Blau Logo" className="h-16 w-auto" />
+            <img src="/fala-blau.jpeg" alt="Logotipo do Fala Blau" className="h-16 w-auto" />
             <div className="ml-2 text-sm font-semibold">FALA BLAU</div>
           </div>
           
           <div className="flex flex-col mt-8">
             <div className="flex flex-row items-center justify-between text-xs">
               <span className="font-bold">Conversas</span>
-              <span className="flex items-center justify-center bg-gray-300 h-4 w-4 rounded-full">4</span>
+            </div>
+            <div className="flex flex-col space-y-1 mt-4 -mx-2 h-48 overflow-y-auto">
+              <div className="relative mx-2">
+                <input
+                  type="text"
+                  className="w-full border rounded-md px-3 py-2 text-sm"
+                  placeholder="Procurar..."
+                />
+              </div>
+              <button className="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2">
+                <div className="flex items-center justify-center h-8 w-8 bg-indigo-200 rounded-full">U1</div>
+                <div className="ml-2 text-sm font-semibold">Usuário 1</div>
+              </button>
+              <button className="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2">
+                <div className="flex items-center justify-center h-8 w-8 bg-orange-200 rounded-full">U2</div>
+                <div className="ml-2 text-sm font-semibold">Usuário 2</div>
+              </button>
             </div>
             <div className="mt-4 space-y-2">
               <button className="flex items-center justify-center w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">
@@ -21,12 +37,6 @@ const Chat = () => {
               </button>
               <button className="flex items-center justify-center w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg">
                 Procurar Usuário
-              </button>
-            </div>
-            <div className="flex flex-col space-y-1 mt-4 -mx-2 h-48 overflow-y-auto">
-              <button className="flex flex-row items-center hover:bg-gray-100 rounded-xl p-2">
-                <div className="flex items-center justify-center h-8 w-8 bg-indigo-200 rounded-full">C</div>
-                <div className="ml-2 text-sm font-semibold">Chiquinho</div>
               </button>
             </div>
           </div>
@@ -38,18 +48,18 @@ const Chat = () => {
                 <div className="grid grid-cols-12 gap-y-2">
                   <div className="col-start-1 col-end-8 p-3 rounded-lg">
                     <div className="flex flex-row items-center">
-                      <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">A</div>
+                      <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">U1</div>
                       <div className="relative ml-3 text-sm bg-white py-2 px-4 shadow rounded-xl">
-                        <div>Olá! Como você está hoje?</div>
+                        <div>Olá, tudo bem?</div>
                       </div>
                     </div>
                   </div>
                   <div className="col-start-6 col-end-13 p-3 rounded-lg">
                     <div className="flex items-center justify-end">
                       <div className="relative mr-3 text-sm bg-indigo-100 py-2 px-4 shadow rounded-xl">
-                        <div>Estou bem, e você?</div>
+                        <div>Tudo ótimo, e com você?</div>
                       </div>
-                      <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">A</div>
+                      <div className="flex items-center justify-center h-10 w-10 rounded-full bg-indigo-500 flex-shrink-0">U2</div>
                     </div>
                   </div>
                 </div>
