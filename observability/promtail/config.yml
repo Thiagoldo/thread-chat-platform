@@ -16,3 +16,26 @@ scrape_configs:
         labels:
           job: nginx
           __path__: /var/log/nginx/*.log
+          job: nginx-logs
+          __path__: /var/log/services/nginx/*.log
+  - job_name: user-service
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: user-service-logs
+          __path__: /var/log/services/user-service/*.log
+  - job_name: chat-service
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: chat-service-logs
+          __path__: /var/log/services/chat-service/*.log
+  - job_name: websocket-service
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: websocket-service-logs
+          __path__: /var/log/services/websocket-service/*.log
