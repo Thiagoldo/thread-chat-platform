@@ -12,7 +12,7 @@ services:
     env_file:
       - ../.env
     volumes:
-      - ../observability/logs/user-service:/app/logs
+      - ../observability/logs/user-service:/var/log/services/user-service
     networks:
       - backend-network
       - data-network
@@ -29,7 +29,7 @@ services:
     env_file:
       - ../.env
     volumes:
-      - ../observability/logs/chat-service:/app/logs
+      - ../observability/logs/chat-service:/var/log/services/chat-service
     networks:
       - backend-network
       - data-network
@@ -48,7 +48,7 @@ services:
     env_file:
       - ../.env
     volumes:
-      - ../observability/logs/websocket-service:/app/logs
+      - ../observability/logs/websocket-service:/var/log/services/websocket-service
     networks:
       - backend-network
       - data-network
