@@ -6,10 +6,10 @@ const Chat = () => {
       <div className="flex flex-row h-full w-full overflow-x-hidden">
         <div className="flex flex-col py-8 pl-6 pr-2 w-64 bg-white flex-shrink-0">
           <div className="flex flex-row items-center justify-center h-16 w-full">
-            <img src="/fala-blau.jpeg" alt="Logotipo do Fala Blau" className="h-16 w-auto" />
-            <div className="ml-2 text-sm font-semibold">FALA BLAU</div>
+            <img src="/thread-logo.png" alt="Logotipo do Thread" className="h-16 w-auto" />
+            <div className="ml-2 text-sm font-semibold">THREAD</div>
           </div>
-          
+
           <div className="flex flex-col mt-8">
             <div className="flex flex-row items-center justify-between text-xs">
               <span className="font-bold">Conversas</span>

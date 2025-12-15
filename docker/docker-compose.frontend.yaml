@@ -1,6 +1,6 @@
 services:
   nginx:
-    image: fala-blau-nginx:latest
+    image: thread-nginx:latest
     build:
       context: ..
       dockerfile: ./nginx/docker/Dockerfile

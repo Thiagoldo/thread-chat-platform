@@ -1,6 +1,6 @@
 services:
   user-service:
-    image: fala-blau-users-api:latest
+    image: thread-users-api:latest
     build:
       context: ../microservices/users-service
       dockerfile: ./docker/Dockerfile
@@ -18,7 +18,7 @@ services:
       - data-network
 
   chat-service:
-    image: fala-blau-chats-api:latest
+    image:  thread-chats-api:latest
     build:
       context: ../microservices/chat-service
       dockerfile: ./docker/Dockerfile
@@ -36,7 +36,7 @@ services:
 
 
   websocket-service:
-    image: fala-blau-socketio-api:latest
+    image: thread-socketio-api:latest
     build:
       context: ../microservices/websocket-service
       dockerfile: ./docker/Dockerfile

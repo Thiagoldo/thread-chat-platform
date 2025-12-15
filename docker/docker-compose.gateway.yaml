@@ -1,7 +1,7 @@
 services:
   kong:
     container_name: kong
-    image: fala-blau-kong:latest
+    image: thread-kong:latest
     build:
       context: ../kong
       dockerfile: ./docker/Dockerfile

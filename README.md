@@ -1,14 +1,12 @@
-# FalaBLAU - Sistema de Chat em Tempo Real
+# Thread - Plataforma de Colaboração em Tempo Real
 
-<img src="public/fala-blau.jpeg" alt="FalaBLAU Logo" width="250"/>
+<img src="public/thread-logo.png" alt="Thread Logo" width="250"/>
 
-Um sistema de chat em tempo real construído com arquitetura de microsserviços, utilizando Flask para o backend, e totalmente containerizado com Docker.
-
-![Arquitetura do Sistema](public/arquitetura-sistema.jpeg)
+Sistema de chat em tempo real escalável construído com arquitetura moderna de microsserviços, utilizando NestJS no backend e totalmente containerizado com Docker.
 
 ## 📚 Sobre o Projeto
 
-Este projeto, denominado FalaBLAU, foi desenvolvido como trabalho de conclusão de curso (TCC) de pós-graduação. Ele visa demonstrar a implementação de um sistema de chat em tempo real utilizando uma arquitetura de microsserviços moderna e robusta.
+**Thread** é uma plataforma de chat em tempo real desenvolvida como **projeto de portfólio** para demonstrar proficiência em arquitetura de microsserviços moderna, engenharia Full Stack e práticas DevOps. O sistema implementa um ambiente de mensagens escalável e pronto para produção, com ênfase em type safety (TypeScript/NestJS), performance e automação de deploy.
 
 ## 📜 Sumário
 
@@ -60,6 +58,61 @@ O projeto está em desenvolvimento e as seguintes funcionalidades estão planeja
 
 O projeto é composto pelos seguintes serviços:
 
+```mermaid
+graph TD
+    Client["Cliente Web<br/><i>React + TypeScript</i>"]
+
+    subgraph Layer1["Camada de Gateway"]
+        NGINX["NGINX<br/>Reverse Proxy"]
+        Kong["Kong<br/>API Gateway"]
+    end
+
+    subgraph Layer2["Camada de Serviços"]
+        direction LR
+        US["User Service<br/>NestJS + Prisma"]
+        CS["Chat Service<br/>NestJS + Mongoose"]
+        WS["WebSocket<br/>Socket.IO"]
+    end
+
+    subgraph Layer3["Camada de Persistência"]
+        direction LR
+        PG[("PostgreSQL")]
+        MG[("MongoDB")]
+        RD[("Redis")]
+    end
+
+    subgraph Support["Serviços de Suporte"]
+        direction LR
+        KC["Keycloak"]
+        RMQ["RabbitMQ"]
+    end
+
+    Client --> NGINX
+    NGINX --> Kong
+    Kong --> US & CS & WS
+
+    US --> PG
+    CS --> MG
+    WS --> RD
+
+    Kong -. Auth .-> KC
+    US & CS & WS -. Events .-> RMQ
+
+    classDef client fill:#7C3AED,stroke:#5B21B6,stroke-width:3px,color:#fff
+    classDef gateway fill:#06B6D4,stroke:#0891B2,stroke-width:2px,color:#fff
+    classDef service fill:#8B5CF6,stroke:#7C3AED,stroke-width:2px,color:#fff
+    classDef db fill:#10B981,stroke:#059669,stroke-width:2px,color:#fff
+    classDef support fill:#F59E0B,stroke:#D97706,stroke-width:2px,color:#000
+
+    class Client client
+    class NGINX,Kong gateway
+    class US,CS,WS service
+    class PG,MG,RD db
+    class KC,RMQ support
+```
+
+### Descrição dos Componentes
+
 - **nginx**: Atua como um proxy reverso para os outros serviços e serve o frontend.
 - **frontend**: Aplicação web construída com React, TypeScript e Tailwind CSS.
 - **kong**: API Gateway para gerenciar as rotas e o acesso aos microsserviços.
@@ -73,8 +126,10 @@ O projeto é composto pelos seguintes serviços:
 
 ## 🛠️ Tecnologias Utilizadas
 
+### Stack Atual (Em Transição)
+
 - **Frontend**: React, TypeScript, Tailwind CSS
-- **Backend**: Python, Flask, Flask-RESTX, Flask-SocketIO
+- **Backend**: Python, Flask, Flask-RESTX, Flask-SocketIO _(sendo migrado para NestJS)_
 - **Banco de Dados**: PostgreSQL, MongoDB
 - **Mensageria**: RabbitMQ
 - **Autenticação**: Keycloak
@@ -83,7 +138,20 @@ O projeto é composto pelos seguintes serviços:
 - **Observabilidade**: Grafana, Loki, Promtail
 - **Comunicação em Tempo Real**: WebSockets
 - **Servidor WSGI**: Gunicorn, Eventlet
-- **Outros**: Pika (para RabbitMQ), Kombu, Psycopg2, PyMongo
+
+### Stack Futura (Planejada)
+
+- **Frontend**: React, TypeScript, Tailwind CSS
+- **Backend**: **NestJS**, TypeScript, Socket.IO
+- **ORM**: **Prisma** (PostgreSQL), **Mongoose** (MongoDB)
+- **Banco de Dados**: PostgreSQL, MongoDB, **Redis** (cache)
+- **Mensageria**: RabbitMQ
+- **Autenticação**: Keycloak (OAuth2/JWT)
+- **API Gateway**: Kong
+- **Containerização**: Docker (multi-stage builds), Docker Compose
+- **Observabilidade**: Grafana, Loki, Promtail, **Prometheus**
+- **CI/CD**: GitHub Actions
+- **IaC**: Terraform (AWS) ou Kubernetes
 
 ## 📁 Estrutura do Projeto
 
@@ -128,7 +196,7 @@ O projeto é composto pelos seguintes serviços:
 │       └── config.yml
 ├── public
 │   ├── arquitetura-sistema.jpeg
-│   └── fala-blau.jpeg
+│   └── thread-logo.png
 ├── index.html
 └── README.md
 ```
@@ -248,11 +316,3 @@ Consulte o CHANGELOG.md para ver as mudanças notáveis em cada versão do proje
 ## ⚖️️ Licença
 
 Este projeto está licenciado sob a Licença MIT.
-
-## 👥 Autores
-
-Este projeto foi desenvolvido por:
-
-- **Jefferson Sant'ana Galvão** - [@hudjinn](https://github.com/hudjinn)
-- **Victor Adler** - [@victoradler](https://github.com/victoradler)
-- **Thiago Lima** - [@Thiagoldo](https://github.com/Thiagoldo)
